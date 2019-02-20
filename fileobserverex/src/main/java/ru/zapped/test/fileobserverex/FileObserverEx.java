@@ -1,19 +1,21 @@
-package ru.zapped.test.fileobserver;
+package ru.zapped.test.fileobserverex;
 
 import android.os.FileObserver;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-/**
- * Created by alex on 20.02.19.
- */
-
 public class FileObserverEx extends FileObserver {
     private String mPath = null;
+    private IFileObserverHandler mHandler = null;
 
     public FileObserverEx(String path) {
+        this(path, null);
+    }
+
+    public FileObserverEx(String path, IFileObserverHandler Handler) {
         super(path);
         mPath = path;
+        mHandler = Handler;
     }
 
     @Override
@@ -29,10 +31,14 @@ public class FileObserverEx extends FileObserver {
     }
 
     @Override
-    public void onEvent(int i, @Nullable String s) {
-        if (s == null) {
-            s = "<EMPTY>";
+    public void onEvent(int i, @Nullable String file) {
+        String logFile = file;
+        if (logFile == null) {
+            logFile = "<EMPTY>";
         }
-        Log.d("FileObserverEx", String.format("File observer event: %d, %s", i, s));
+        Log.d("FileObserverEx", String.format("File observer event: %d, %s", i, logFile));
+        if (mHandler != null) {
+            mHandler.onEvent(i, file);
+        }
     }
 }
